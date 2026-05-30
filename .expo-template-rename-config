@@ -1,0 +1,4 @@
+# Exclude node_modules
+!**/node_modules
+# Include app.json in all apps
+apps/*/app.json

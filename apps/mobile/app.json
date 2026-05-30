@@ -1,5 +1,7 @@
 {
   "expo": {
+    "name": "HelloWorldMobile",
+    "slug": "HelloWorldMobile",
     "icon": "../../packages/source/assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {

@@ -1,5 +1,7 @@
 {
   "expo": {
+    "name": "HelloWorldTV",
+    "slug": "HelloWorldTV",
     "icon": "../../packages/source/assets/images/icon.png",
     "userInterfaceStyle": "automatic",
     "ios": {
