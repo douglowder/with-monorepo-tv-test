@@ -1,0 +1,17 @@
+{
+  "name": "with-monorepo-tv",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "sync-routes": "node ./scripts/sync-routes.js"
+  },
+  "devDependencies": {
+    "@react-native-tvos/config-tv": "^0.1.6",
+    "@types/react": "~19.2.2",
+    "typescript": "~6.0.3"
+  }
+}

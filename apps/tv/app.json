@@ -1,0 +1,57 @@
+{
+  "expo": {
+    "icon": "../../packages/source/assets/images/icon.png",
+    "userInterfaceStyle": "automatic",
+    "ios": {
+      "supportsTablet": true,
+      "icon": "../../packages/source/assets/expo.icon"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#E6F4FE",
+        "foregroundImage": "../../packages/source/assets/images/android-icon-foreground.png",
+        "backgroundImage": "../../packages/source/assets/images/android-icon-background.png",
+        "monochromeImage": "../../packages/source/assets/images/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "output": "static",
+      "favicon": "../../packages/source/assets/images/favicon.png"
+    },
+    "plugins": [
+      "expo-router",
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#208AEF",
+          "android": {
+            "image": "../../packages/source/assets/images/splash-icon.png",
+            "imageWidth": 76
+          }
+        }
+      ],
+      [
+        "@react-native-tvos/config-tv",
+        {
+          "androidTVBanner": "../../packages/source/assets/tv_icons/icon-400x240.png",
+          "androidTVIcon": "../../packages/source/assets/tv_icons/icon-760x760.png",
+          "appleTVImages": {
+            "icon": "../../packages/source/assets/tv_icons/icon-1280x768.png",
+            "iconSmall": "../../packages/source/assets/tv_icons/icon-400x240.png",
+            "iconSmall2x": "../../packages/source/assets/tv_icons/icon-800x480.png",
+            "topShelf": "../../packages/source/assets/tv_icons/icon-1920x720.png",
+            "topShelf2x": "../../packages/source/assets/tv_icons/icon-3840x1440.png",
+            "topShelfWide": "../../packages/source/assets/tv_icons/icon-2320x720.png",
+            "topShelfWide2x": "../../packages/source/assets/tv_icons/icon-4640x1440.png"
+          }
+        }
+      ],
+      "expo-web-browser"
+    ],
+    "experiments": {
+      "typedRoutes": true,
+      "reactCompiler": true
+    }
+  }
+}

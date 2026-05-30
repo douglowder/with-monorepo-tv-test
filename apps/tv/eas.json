@@ -1,0 +1,45 @@
+{
+  "cli": {
+    "version": ">= 3.15.1"
+  },
+  "build": {
+    "development": {
+      "extends": "production",
+      "distribution": "internal",
+      "env": {
+        "EXPO_TV": "1"
+      },
+      "android": {
+        "buildType": "apk",
+        "withoutCredentials": true,
+        "gradleCommand": ":app:assembleDebug"
+      },
+      "ios": {
+        "buildConfiguration": "Debug",
+        "simulator": true
+      }
+    },
+    "preview": {
+      "extends": "production",
+      "distribution": "internal",
+      "env": {
+        "EXPO_TV": "1"
+      },
+      "ios": {
+        "simulator": true
+      },
+      "android": {
+        "buildType": "apk",
+        "withoutCredentials": true
+      }
+    },
+    "production": {
+      "env": {
+        "EXPO_TV": "1"
+      }
+    }
+  },
+  "submit": {
+    "production": {}
+  }
+}
