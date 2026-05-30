@@ -102,28 +102,36 @@ yarn sync-routes
 
 to regenerate the app re-export trees.
 
-### ESLint and `@/*` imports
+### Linting
 
-The source uses `@/components/...`, `@/hooks/...`, `@/assets/...` aliases throughout. The apps' `tsconfig.json` files map these correctly, but `expo lint` (which generates `.eslintrc.js` extending `expo`) only configures the **node** import resolver — `@/*` paths will show as unresolved under `import/no-unresolved`.
+Lint the whole workspace from the root:
 
-If you run `expo lint` and want those imports to resolve, drop a root `.eslintrc.js` like:
-
-```js
-module.exports = {
-  extends: 'expo',
-  settings: {
-    'import/resolver': {
-      typescript: {
-        project: ['apps/*/tsconfig.json'],
-        alwaysTryTypes: true,
-      },
-      node: true,
-    },
-  },
-};
+```sh
+yarn lint        # runs `expo lint` against the root eslint.config.js
 ```
 
-`eslint-import-resolver-typescript` is pulled in transitively by recent `eslint-plugin-import` versions.
+The repo ships a flat ESLint config (`eslint.config.js`) that extends `eslint-config-expo/flat`. Because the source uses `@/components/...`, `@/hooks/...`, `@/assets/...` aliases that map (via each app's `tsconfig.json`) into the shared package, the config registers the **typescript** import resolver pointed at `apps/*/tsconfig.json` so `import/no-unresolved` resolves them correctly across the monorepo:
+
+```js
+// eslint.config.js
+const { defineConfig } = require('eslint/config');
+const expoConfig = require('eslint-config-expo/flat');
+
+module.exports = defineConfig([
+  expoConfig,
+  { ignores: ['dist/*'] },
+  {
+    settings: {
+      'import/resolver': {
+        typescript: { project: ['apps/*/tsconfig.json'], alwaysTryTypes: true },
+        node: true,
+      },
+    },
+  },
+]);
+```
+
+> Flat config (`eslint.config.js`) and `eslint-config-expo/flat` require **ESLint 9** — `eslint-config-expo` loads `eslint/config` internally, which doesn't exist in ESLint 8. The root `devDependencies` pin `eslint@^9` and `eslint-import-resolver-typescript` accordingly.
 
 ## Deploy
 
