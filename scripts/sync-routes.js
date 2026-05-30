@@ -20,6 +20,7 @@
 const fs = require("fs");
 const path = require("path");
 
+// eslint-disable-next-line no-undef
 const WORKSPACE_ROOT = path.resolve(__dirname, "..");
 const SOURCE_PKG = path.join(WORKSPACE_ROOT, "packages", "source");
 const SOURCE_APP = path.join(SOURCE_PKG, "src", "app");

@@ -211,8 +211,6 @@ const TouchableNativeFeedbackButton = (props: {
 
 const useDemoStyles = function () {
   const { height, width, spacing } = useScreenDimensions();
-  const theme = useTheme();
-  const backgroundColor = theme.background;
   return StyleSheet.create({
     container: {
       flex: 1,
