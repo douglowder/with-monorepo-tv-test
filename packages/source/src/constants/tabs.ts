@@ -34,10 +34,4 @@ export const commonTabs: TabSpec[] = [
     label: 'Explore',
     icon: require('@/assets/images/tabIcons/explore.png'),
   },
-  {
-    name: 'tv_focus',
-    href: '/tv_focus',
-    label: 'Events',
-    icon: require('@/assets/images/tabIcons/tv.png'),
-  },
 ];
