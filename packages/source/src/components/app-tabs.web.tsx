@@ -1,3 +1,4 @@
+import { type Href } from 'expo-router';
 import {
   TabList,
   TabListProps,
@@ -21,23 +22,25 @@ import { ThemedText } from './themed-text';
 import { ThemedView } from './themed-view';
 
 import { Colors, MaxContentWidth } from '@/constants/theme';
+import type { TabSpec } from '@/constants/tabs';
 import { useScreenDimensions } from '@/hooks/use-screen-dimensions';
 
-export default function AppTabs() {
+export default function AppTabs({ tabs }: { tabs: TabSpec[] }) {
   return (
     <Tabs>
       <TabSlot style={{ height: '100%' }} />
       <TabList asChild>
         <CustomTabList>
-          <TabTrigger name="home" href="/" asChild>
-            <TabButton>Home</TabButton>
-          </TabTrigger>
-          <TabTrigger name="explore" href="/explore" asChild>
-            <TabButton>Explore</TabButton>
-          </TabTrigger>
-          <TabTrigger name="tv_focus" href="/tv_focus" asChild>
-            <TabButton>Events</TabButton>
-          </TabTrigger>
+          {tabs.map((tab) => (
+            <TabTrigger
+              key={tab.name}
+              name={tab.name}
+              href={tab.href as Href}
+              asChild
+            >
+              <TabButton>{tab.label}</TabButton>
+            </TabTrigger>
+          ))}
         </CustomTabList>
       </TabList>
     </Tabs>

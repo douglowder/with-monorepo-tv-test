@@ -102,6 +102,46 @@ Because the script only touches files carrying the `@generated` marker, you can 
 
 For same-route, different-implementation across platforms without changing the route tree, you can also enable the commented-out TV source-extension block in each app's `metro.config.js`. With it on, a `foo.tv.tsx` beside `foo.tsx` in shared source resolves only in TV builds.
 
+### Tab bar (per-app tabs)
+
+The tab bar is **data-driven** so it can differ per app. The shared tabs are an array in `packages/source/src/constants/tabs.ts`:
+
+```ts
+export type TabSpec = { name: string; href: string; label: string; icon: ImageSourcePropType };
+export const commonTabs: TabSpec[] = [ /* index, explore, tv_focus */ ];
+```
+
+Each app owns its own list in `apps/<app>/src/tabs.ts`, spreading the shared set and appending any app-specific tabs:
+
+```ts
+import { commonTabs, type TabSpec } from 'with-monorepo-tv-source/src/constants/tabs';
+
+export const tabs: TabSpec[] = [
+  ...commonTabs,
+  // { name: 'settings', href: '/settings', label: 'Settings', icon: require('@/assets/...') },
+];
+```
+
+The app's `src/app/_layout.tsx` is an app-specific file (no `@generated` marker, so `sync-routes` leaves it alone) that renders the shared `RootLayout` with that list:
+
+```tsx
+import RootLayout from 'with-monorepo-tv-source/src/components/root-layout';
+import { tabs } from '../tabs';
+
+export default function Layout() {
+  return <RootLayout tabs={tabs} />;
+}
+```
+
+`RootLayout` and the shared, data-driven `AppTabs` (native `app-tabs.tsx` / web `app-tabs.web.tsx`) live in `packages/source/src/components/`. A tab's `name` must match a route file in the app's `src/app/`.
+
+**Drift check:** because tabs and routes are declared separately, `scripts/sync-routes.js` runs a check after syncing and warns when they diverge:
+
+- a tab whose `name` has no matching route (`tab "settings" has no matching route…`)
+- a top-level route with no tab (`route "settings" has no tab…`)
+
+This is a best-effort static check (it reads the `name:` entries from `tabs.ts`, it doesn't execute it), so a route you deliberately don't expose as a tab will warn — nest it under a non-tab segment, or treat the warning as informational.
+
 ### Why `reset-project` is omitted
 
 The `with-router-tv` template ships a `reset-project` script that moves the starter code to `app-example/` and creates a blank `src/app/`. That script doesn't have a clean story for the monorepo layout — it's unclear whether "reset" should target the shared package, the re-export trees, or both, and the re-exports would have to be rebuilt regardless.

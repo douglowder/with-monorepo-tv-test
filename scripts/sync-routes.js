@@ -132,6 +132,65 @@ function syncApp(appDir, sourceFiles) {
   return { written, unchanged, removed, overrides, appOnly };
 }
 
+// --- Tab drift check -------------------------------------------------------
+//
+// The tab bar is data-driven: shared tabs live in packages/source/src/
+// constants/tabs.ts and each app's src/tabs.ts spreads them and may add its
+// own. A tab's `name` must match a route file in the app's src/app/. This
+// best-effort check (static, regex-based — it does not execute the TS) warns
+// when those drift apart so an added/removed per-app route isn't silently left
+// out of, or dangling in, the tab bar.
+
+const TAB_NAME_RE = /name:\s*['"]([^'"]+)['"]/g;
+const SHARED_TABS_FILE = path.join(SOURCE_PKG, "src", "constants", "tabs.ts");
+
+function declaredTabNames(appDir) {
+  const names = new Set();
+  for (const file of [SHARED_TABS_FILE, path.join(appDir, "src", "tabs.ts")]) {
+    if (!fs.existsSync(file)) continue;
+    const src = fs.readFileSync(file, "utf8");
+    let m;
+    while ((m = TAB_NAME_RE.exec(src))) names.add(m[1]);
+  }
+  return names;
+}
+
+// Top-level route files that could reasonably be tabs: excludes _layout/+html,
+// dynamic segments ([id], [...rest]), and group directories ((tabs)).
+function tabEligibleRoutes(appDir) {
+  const appAppDir = path.join(appDir, "src", "app");
+  const names = new Set();
+  if (!fs.existsSync(appAppDir)) return names;
+  for (const entry of fs.readdirSync(appAppDir, { withFileTypes: true })) {
+    if (!entry.isFile() || !ROUTE_EXT.test(entry.name)) continue;
+    const base = entry.name.replace(ROUTE_EXT, "");
+    if (base.startsWith("_") || base.startsWith("+") || base.includes("[")) continue;
+    names.add(base);
+  }
+  return names;
+}
+
+function checkTabs(appName, appDir) {
+  const declared = declaredTabNames(appDir);
+  const routes = tabEligibleRoutes(appDir);
+  for (const name of declared) {
+    if (!routes.has(name)) {
+      console.warn(
+        `  ⚠ ${appName}: tab "${name}" has no matching route in src/app — ` +
+          `add the route or remove the tab from src/tabs.ts`
+      );
+    }
+  }
+  for (const name of routes) {
+    if (!declared.has(name)) {
+      console.warn(
+        `  ⚠ ${appName}: route "${name}" has no tab — add it to src/tabs.ts ` +
+          `or nest it so it isn't a top-level route`
+      );
+    }
+  }
+}
+
 function main() {
   if (!fs.existsSync(SOURCE_APP)) {
     console.error(`sync-routes: ${SOURCE_APP} does not exist`);
@@ -146,11 +205,13 @@ function main() {
     .filter((name) => fs.existsSync(path.join(APPS_DIR, name, "package.json")));
 
   for (const app of apps) {
-    const stats = syncApp(path.join(APPS_DIR, app), sourceFiles);
+    const appDir = path.join(APPS_DIR, app);
+    const stats = syncApp(appDir, sourceFiles);
     console.log(
       `sync-routes ${app}: ${stats.written} written, ${stats.unchanged} unchanged, ` +
         `${stats.removed} removed, ${stats.overrides} overrides, ${stats.appOnly} app-specific`
     );
+    checkTabs(app, appDir);
   }
 }
 

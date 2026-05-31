@@ -4,13 +4,14 @@ import { Platform, useColorScheme } from 'react-native';
 import WebTabs from './app-tabs.web';
 
 import { Colors } from '@/constants/theme';
+import type { TabSpec } from '@/constants/tabs';
 
-export default function AppTabs() {
+export default function AppTabs({ tabs }: { tabs: TabSpec[] }) {
   const scheme = useColorScheme();
   const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
 
   if (Platform.OS === 'android' && Platform.isTV) {
-    return <WebTabs />;
+    return <WebTabs tabs={tabs} />;
   }
 
   return (
@@ -24,29 +25,12 @@ export default function AppTabs() {
         default: { color: colors.text },
       }}
     >
-      <NativeTabs.Trigger name="index">
-        <NativeTabs.Trigger.Label>Home</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/home.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="explore">
-        <NativeTabs.Trigger.Label>Explore</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/explore.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
-
-      <NativeTabs.Trigger name="tv_focus">
-        <NativeTabs.Trigger.Label>Events</NativeTabs.Trigger.Label>
-        <NativeTabs.Trigger.Icon
-          src={require('@/assets/images/tabIcons/tv.png')}
-          renderingMode="template"
-        />
-      </NativeTabs.Trigger>
+      {tabs.map((tab) => (
+        <NativeTabs.Trigger key={tab.name} name={tab.name}>
+          <NativeTabs.Trigger.Label>{tab.label}</NativeTabs.Trigger.Label>
+          <NativeTabs.Trigger.Icon src={tab.icon} renderingMode="template" />
+        </NativeTabs.Trigger>
+      ))}
     </NativeTabs>
   );
 }
