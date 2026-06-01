@@ -1,0 +1,6 @@
+{
+  "renamePatterns": ["apps/*/app.json"],
+  "workspaceConfig": {
+    "nodeLinker": "hoisted"
+  }
+}
